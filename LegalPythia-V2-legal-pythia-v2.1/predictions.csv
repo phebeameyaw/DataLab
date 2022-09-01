@@ -1,0 +1,65 @@
+,premise,hypothesis,prediction,similarity
+0,it is nighttime.,it is nighttime.,entailment,100%
+1,it is nighttime.,a woman holding a scruffy cat.,neutral,69%
+2,it is nighttime.,two people are racing.,neutral,69%
+3,it is nighttime.,the firefighters are trying to save a child.,neutral,75%
+4,it is nighttime.,the dogs are adopted.,neutral,69%
+5,it is nighttime.,three men are a dancer.,neutral,70%
+6,it is nighttime.,the man is outside.,neutral,82%
+7,it is nighttime.,a lady walks down the street.,neutral,74%
+8,a woman holding a scruffy cat.,it is nighttime.,neutral,69%
+9,a woman holding a scruffy cat.,a woman holding a scruffy cat.,entailment,100%
+10,a woman holding a scruffy cat.,two people are racing.,contradiction,64%
+11,a woman holding a scruffy cat.,the firefighters are trying to save a child.,contradiction,76%
+12,a woman holding a scruffy cat.,the dogs are adopted.,contradiction,69%
+13,a woman holding a scruffy cat.,three men are a dancer.,contradiction,78%
+14,a woman holding a scruffy cat.,the man is outside.,contradiction,80%
+15,a woman holding a scruffy cat.,a lady walks down the street.,neutral,84%
+16,two people are racing.,it is nighttime.,neutral,69%
+17,two people are racing.,a woman holding a scruffy cat.,contradiction,64%
+18,two people are racing.,two people are racing.,entailment,100%
+19,two people are racing.,the firefighters are trying to save a child.,neutral,80%
+20,two people are racing.,the dogs are adopted.,contradiction,81%
+21,two people are racing.,three men are a dancer.,contradiction,84%
+22,two people are racing.,the man is outside.,neutral,76%
+23,two people are racing.,a lady walks down the street.,contradiction,73%
+24,the firefighters are trying to save a child.,it is nighttime.,neutral,75%
+25,the firefighters are trying to save a child.,a woman holding a scruffy cat.,contradiction,76%
+26,the firefighters are trying to save a child.,two people are racing.,contradiction,80%
+27,the firefighters are trying to save a child.,the firefighters are trying to save a child.,entailment,100%
+28,the firefighters are trying to save a child.,the dogs are adopted.,contradiction,79%
+29,the firefighters are trying to save a child.,three men are a dancer.,contradiction,81%
+30,the firefighters are trying to save a child.,the man is outside.,neutral,83%
+31,the firefighters are trying to save a child.,a lady walks down the street.,contradiction,80%
+32,the dogs are adopted.,it is nighttime.,contradiction,69%
+33,the dogs are adopted.,a woman holding a scruffy cat.,contradiction,69%
+34,the dogs are adopted.,two people are racing.,contradiction,81%
+35,the dogs are adopted.,the firefighters are trying to save a child.,contradiction,79%
+36,the dogs are adopted.,the dogs are adopted.,entailment,100%
+37,the dogs are adopted.,three men are a dancer.,contradiction,76%
+38,the dogs are adopted.,the man is outside.,contradiction,76%
+39,the dogs are adopted.,a lady walks down the street.,contradiction,70%
+40,three men are a dancer.,it is nighttime.,neutral,70%
+41,three men are a dancer.,a woman holding a scruffy cat.,contradiction,78%
+42,three men are a dancer.,two people are racing.,contradiction,84%
+43,three men are a dancer.,the firefighters are trying to save a child.,contradiction,81%
+44,three men are a dancer.,the dogs are adopted.,contradiction,76%
+45,three men are a dancer.,three men are a dancer.,entailment,100%
+46,three men are a dancer.,the man is outside.,neutral,81%
+47,three men are a dancer.,a lady walks down the street.,contradiction,79%
+48,the man is outside.,it is nighttime.,neutral,82%
+49,the man is outside.,a woman holding a scruffy cat.,contradiction,80%
+50,the man is outside.,two people are racing.,contradiction,76%
+51,the man is outside.,the firefighters are trying to save a child.,neutral,83%
+52,the man is outside.,the dogs are adopted.,contradiction,76%
+53,the man is outside.,three men are a dancer.,neutral,81%
+54,the man is outside.,the man is outside.,entailment,100%
+55,the man is outside.,a lady walks down the street.,contradiction,86%
+56,a lady walks down the street.,it is nighttime.,neutral,74%
+57,a lady walks down the street.,a woman holding a scruffy cat.,contradiction,84%
+58,a lady walks down the street.,two people are racing.,contradiction,73%
+59,a lady walks down the street.,the firefighters are trying to save a child.,contradiction,80%
+60,a lady walks down the street.,the dogs are adopted.,contradiction,70%
+61,a lady walks down the street.,three men are a dancer.,contradiction,79%
+62,a lady walks down the street.,the man is outside.,contradiction,86%
+63,a lady walks down the street.,a lady walks down the street.,entailment,100%
