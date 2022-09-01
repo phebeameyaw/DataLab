@@ -358,7 +358,7 @@ def main():
     userchoice = st.container()  # updated st.beta_container() to st.container()
 
     # -- Default selector list
-    selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities', 'new']
+    selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities', 'Explanation Project']
 
     with header:
         st.image('codes/res/legalpythiaheader.jpg')
@@ -511,7 +511,7 @@ def main():
 
         # Adding in new file to try and visualise similarity
 
-        if (file1 is not None) and (file2 is not None) and userchoice == 'new':
+        if (file1 is not None) and (file2 is not None) and userchoice == 'Explanation Project':
             st.write('Document 1: \n')
             premise_tokens = premise_text.decode('utf8')
             annotated_text(*premise_tokens)
