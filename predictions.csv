@@ -1,0 +1,5 @@
+,premise,hypothesis,prediction,similarity
+0,It is necessary for a skilled person in the area of expertise of the patent to understand it.,A patent has to be understood by an ordinary skilled person.,entailment,92%
+1,It is necessary for a skilled person in the area of expertise of the patent to understand it.,The Secretary of State has to consider an interim custody order.,contradiction,88%
+2,The custody order has to be executed by the Secretary of State personally.,A patent has to be understood by an ordinary skilled person.,entailment,88%
+3,The custody order has to be executed by the Secretary of State personally.,The Secretary of State has to consider an interim custody order.,entailment,96%
