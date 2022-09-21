@@ -180,7 +180,7 @@ def check_similarity_contradiction(sentence1, sentence2):
         outcome = target_map[pred.data.cpu().numpy()[0]]
     else:
         outcome = target_map[pred[0]]  # modified to get value from tensor
-    return outcome
+    return outcome, softmax.tolist()
 
 
 def styler(col):
@@ -189,7 +189,9 @@ def styler(col):
         return [''] * len(col)
 
     if col.name == 'prediction':
-        return ['background-color: lightcoral' if v == 'contradiction' else 'background-color: lightgreen' if v == 'entailment' else '' for v in col]
+        return [
+            'background-color: lightcoral' if v == 'contradiction' else 'background-color: lightgreen' if v == 'entailment' else ''
+            for v in col]
 
 
 def pdf_to_text(file):
@@ -358,7 +360,8 @@ def main():
     userchoice = st.container()  # updated st.beta_container() to st.container()
 
     # -- Default selector list
-    selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities', 'Explanation Project']
+    selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities',
+                     'Explanation Project']
 
     with header:
         st.image('codes/res/legalpythiaheader.jpg')
@@ -428,7 +431,7 @@ def main():
             totalCount = len(premises) * len(hypotheses)
             for premise in premises:
                 for hypothesis in hypotheses:
-                    outcome = check_similarity_contradiction(premise, hypothesis)
+                    outcome = check_similarity_contradiction(premise, hypothesis)[0]
                     row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome}
                     row_count = row_count + 1
                     df_output = df_output.append(row, ignore_index=True)
@@ -509,7 +512,7 @@ def main():
             else:
                 st.write('')
 
-        # Adding in new file to try and visualise similarity
+        # Adding in new file to try and visualise similarity - Katja Alexander
 
         if (file1 is not None) and (file2 is not None) and userchoice == 'Explanation Project':
             st.write('Document 1: \n')
@@ -527,7 +530,7 @@ def main():
             for percent_complete in range(100):
                 time.sleep(0.05)
             my_bar.progress(percent_complete + 1)
-            df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity'])
+            df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity', 'action'])
 
             sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
             sim_percent = '{:.0%}'.format(sim)
@@ -542,10 +545,24 @@ def main():
             totalCount = len(premises) * len(hypotheses)
             for premise in premises:
                 for hypothesis in hypotheses:
-                    outcome = check_similarity_contradiction(premise, hypothesis)
+                    outcome = check_similarity_contradiction(premise, hypothesis)[0]
                     percentage = '{:.0%}'.format(calculate_similarity_percentage(premise, hypothesis))
+                    test = check_similarity_contradiction(premise, hypothesis)[1]
+                    tensor = [["contradiction", "entailment", "neutral"], test[0]]
+                    chart_data = pd.DataFrame(
+                        test,
+                        columns=["entailment", "contradiction", "neutral"])
+                    testing = st.button('click me', key=premise+hypothesis)
+                    if testing:
+                        fig = plt.figure()
+                        ax = fig.add_axes([0,0,1,1])
+                        xValues = ["entailment", "contradiction", "neutral"]
+                        yValues = test[0]
+                        ax.bar(xValues, yValues)
+                        st.pyplot(fig) #data=tensor[1], x=tensor[0], )
+                        st.write(tensor)
                     row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
-                           'similarity': percentage}
+                           'similarity': percentage, 'action': testing}
                     row_count = row_count + 1
                     df_output = df_output.append(row, ignore_index=True)
                     print('Row = ', row)
