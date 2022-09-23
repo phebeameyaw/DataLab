@@ -337,6 +337,9 @@ def save_file(uploaded_file):
         # txt files
         if 'txt' in uploaded_file.name:
             stringio = StringIO(uploaded_file.getvalue().decode('utf-8'))
+        #csv files - Katja Alexander
+        if 'csv' in uploaded_file.name:
+            stringio = StringIO(uploaded_file.getvalue().decode('utf-8'))
         # To read file as string:
         string_data = stringio.read()
         # st.write(string_data)
@@ -361,7 +364,7 @@ def main():
 
     # -- Default selector list
     selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities',
-                     'Explanation Project']
+                     'Explanation Project', 'Duplicate Project']
 
     with header:
         st.image('codes/res/legalpythiaheader.jpg')
@@ -370,8 +373,8 @@ def main():
 
     with userinputfiles and userchoice:
 
-        file1 = st.sidebar.file_uploader('Upload first document', type=['txt', 'pdf', 'docx'])
-        file2 = st.sidebar.file_uploader('Upload second document', type=['txt', 'pdf', 'docx'])
+        file1 = st.sidebar.file_uploader('Upload first document', type=['txt', 'pdf', 'docx', 'csv'])
+        file2 = st.sidebar.file_uploader('Upload second document', type=['txt', 'pdf', 'docx', 'csv'])
 
         save_file(file1)
         save_file(file2)
@@ -579,6 +582,37 @@ def main():
             # st.dataframe(streamlit_df.style.apply(styler))
 
             st.write(streamlit_df.style.apply(styler))
+
+        # Adding in new file to try and remove duplicates - Katja Alexander
+
+        if (file1 is not None) and (file2 is not None) and userchoice == 'Duplicate Project':
+            st.write('Document 1: \n')
+            file1.seek(0)
+            df1 = pd.read_csv(file1, header=0, skip_blank_lines=True).dropna()
+            st.write(df1)
+            st.write('\n')
+            st.write('Document 2: \n')
+            file2.seek(0)
+            df2 = pd.read_csv(file2, header=0, skip_blank_lines=True).dropna()
+            st.write(df2.dropna())
+            st.write('\n')
+
+            st.write('Concatenated Document: \n')
+            df3 = df1.append(df2, ignore_index=True)
+            st.write(df3)
+
+            st.write('duplicates removed:')
+            df4 = df3.drop_duplicates()
+            st.write(df4.reset_index(drop=True))
+
+
+            st.download_button(
+                label='Download new CSV file',
+                data=convert_df_to_csv(df4),
+                file_name='new csv file.csv',
+                mime='text/csv',
+            )
+
 
     if 'load_state' not in st.session_state:
         st.session_state.load_state = False
