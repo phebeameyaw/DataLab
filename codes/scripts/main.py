@@ -337,7 +337,7 @@ def save_file(uploaded_file):
         # txt files
         if 'txt' in uploaded_file.name:
             stringio = StringIO(uploaded_file.getvalue().decode('utf-8'))
-        #csv files - Katja Alexander
+        # csv files - Katja Alexander
         if 'csv' in uploaded_file.name:
             stringio = StringIO(uploaded_file.getvalue().decode('utf-8'))
         # To read file as string:
@@ -555,14 +555,14 @@ def main():
                     chart_data = pd.DataFrame(
                         test,
                         columns=["entailment", "contradiction", "neutral"])
-                    testing = st.button('click me', key=premise+hypothesis)
+                    testing = st.button('click me', key=premise + hypothesis)
                     if testing:
                         fig = plt.figure()
-                        ax = fig.add_axes([0,0,1,1])
+                        ax = fig.add_axes([0, 0, 1, 1])
                         xValues = ["entailment", "contradiction", "neutral"]
                         yValues = test[0]
                         ax.bar(xValues, yValues)
-                        st.pyplot(fig) #data=tensor[1], x=tensor[0], )
+                        st.pyplot(fig)  # data=tensor[1], x=tensor[0], )
                         st.write(tensor)
                     row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
                            'similarity': percentage, 'action': testing}
@@ -597,19 +597,47 @@ def main():
             st.write(df2.dropna())
             st.write('\n')
 
+            # concatenate both documents as is
             st.write('Concatenated Document: \n')
             df3 = df1.append(df2, ignore_index=True)
             st.write(df3)
 
+            # remove the duplicates, and add button to download new csv file
             st.write('duplicates removed:')
             df4 = df3.drop_duplicates()
             st.write(df4.reset_index(drop=True))
 
+            st.download_button(
+                label='Download new concatenated CSV file',
+                data=convert_df_to_csv(df4),
+                file_name='concatenated CSV files.csv',
+                mime='text/csv',
+            )
+
+            # attempt to highlight customers that are likely the same
+            st.write('potential duplicate customers:')
+            duplicates = df4.duplicated(subset=['First Name', 'Last Name'], keep=False)
+            df4['duplicated names'] = duplicates
+            df5 = df4[df4['duplicated names'] == True]
+            df5.drop('duplicated names', axis=1, inplace=True)
+            st.write(df5)
+
+            # Select some rows using st.multiselect. This will break down when you have >1000 rows.
+            selected_indices = st.multiselect('Select customers to keep:', df5.index)
+            selected_rows = df5.loc[selected_indices]
+
+            # removing all duplicated names
+            df6 = pd.concat([df3, df5]).drop_duplicates(keep=False)
+
+            # adding back selected duplicated names
+            st.write('selected names appear at the end of the file, others are removed')
+            df7 = pd.concat([df6, selected_rows])
+            st.write(df7)
 
             st.download_button(
-                label='Download new CSV file',
-                data=convert_df_to_csv(df4),
-                file_name='new csv file.csv',
+                label='Download second concatenated CSV file',
+                data=convert_df_to_csv(df7),
+                file_name='second concatenated CSV file.csv',
                 mime='text/csv',
             )
 
