@@ -518,129 +518,138 @@ def main():
         # Adding in new file to try and visualise similarity - Katja Alexander
 
         if (file1 is not None) and (file2 is not None) and userchoice == 'Explanation Project':
-            st.write('Document 1: \n')
-            premise_tokens = premise_text.decode('utf8')
-            annotated_text(*premise_tokens)
-            st.write('\n')
-            st.write('Document 2: \n')
-            hypothesis_tokens = hypothesis_text.decode('utf8')
-            annotated_text(*hypothesis_tokens)
-            st.write('\n')
+            if '.csv' in file1.name:
+                st.write('Please upload a .txt, .pdf or .docx file only')
+            elif '.csv' in file2.name:
+                st.write('Please upload a .txt, .pdf or .docx file only')
+            else:
+                st.write('Document 1: \n')
+                premise_tokens = premise_text.decode('utf8')
+                annotated_text(*premise_tokens)
+                st.write('\n')
+                st.write('Document 2: \n')
+                hypothesis_tokens = hypothesis_text.decode('utf8')
+                annotated_text(*hypothesis_tokens)
+                st.write('\n')
 
-            st.text('Loading...')
-            my_bar = st.progress(0)
+                st.text('Loading...')
+                my_bar = st.progress(0)
 
-            for percent_complete in range(100):
-                time.sleep(0.05)
-            my_bar.progress(percent_complete + 1)
-            df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity', 'action'])
+                for percent_complete in range(100):
+                    time.sleep(0.05)
+                my_bar.progress(percent_complete + 1)
+                df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity', 'action'])
 
-            sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
-            sim_percent = '{:.0%}'.format(sim)
-            st.write('\n The similarity of the two documents is ', sim_percent)
+                sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
+                sim_percent = '{:.0%}'.format(sim)
+                st.write('\n The similarity of the two documents is ', sim_percent)
 
-            row_count = 0
+                row_count = 0
 
-            # Add a placeholder for progress bar
-            checking_text = st.text('Processing...')
-            bar = st.progress(0)
+                # Add a placeholder for progress bar
+                checking_text = st.text('Processing...')
+                bar = st.progress(0)
 
-            totalCount = len(premises) * len(hypotheses)
-            for premise in premises:
-                for hypothesis in hypotheses:
-                    outcome = check_similarity_contradiction(premise, hypothesis)[0]
-                    percentage = '{:.0%}'.format(calculate_similarity_percentage(premise, hypothesis))
-                    test = check_similarity_contradiction(premise, hypothesis)[1]
-                    tensor = [["contradiction", "entailment", "neutral"], test[0]]
-                    chart_data = pd.DataFrame(
-                        test,
-                        columns=["entailment", "contradiction", "neutral"])
-                    testing = st.button('click me', key=premise + hypothesis)
-                    if testing:
-                        fig = plt.figure()
-                        ax = fig.add_axes([0, 0, 1, 1])
-                        xValues = ["entailment", "contradiction", "neutral"]
-                        yValues = test[0]
-                        ax.bar(xValues, yValues)
-                        st.pyplot(fig)  # data=tensor[1], x=tensor[0], )
-                        st.write(tensor)
-                    row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
-                           'similarity': percentage, 'action': testing}
-                    row_count = row_count + 1
-                    df_output = df_output.append(row, ignore_index=True)
-                    print('Row = ', row)
+                totalCount = len(premises) * len(hypotheses)
+                for premise in premises:
+                    for hypothesis in hypotheses:
+                        outcome = check_similarity_contradiction(premise, hypothesis)[0]
+                        percentage = '{:.0%}'.format(calculate_similarity_percentage(premise, hypothesis))
+                        test = check_similarity_contradiction(premise, hypothesis)[1]
+                        tensor = [["contradiction", "entailment", "neutral"], test[0]]
+                        chart_data = pd.DataFrame(
+                            test,
+                            columns=["entailment", "contradiction", "neutral"])
+                        testing = st.button('click me', key=premise + hypothesis)
+                        if testing:
+                            fig = plt.figure()
+                            ax = fig.add_axes([0, 0, 1, 1])
+                            xValues = ["entailment", "contradiction", "neutral"]
+                            yValues = test[0]
+                            ax.bar(xValues, yValues)
+                            st.pyplot(fig)  # data=tensor[1], x=tensor[0], )
+                            st.write(tensor)
+                        row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
+                               'similarity': percentage, 'action': testing}
+                        row_count = row_count + 1
+                        df_output = df_output.append(row, ignore_index=True)
+                        print('Row = ', row)
 
-                    # Update the progress bar
-                    checking_text.text(f'Processing...  {row_count} of {totalCount}')
-                    bar.progress((row_count / totalCount))
-                    time.sleep(0.1)
+                        # Update the progress bar
+                        checking_text.text(f'Processing...  {row_count} of {totalCount}')
+                        bar.progress((row_count / totalCount))
+                        time.sleep(0.1)
 
-            streamlit_df = pd.DataFrame(df_output)
+                streamlit_df = pd.DataFrame(df_output)
 
-            df_output.to_csv('predictions.csv')
+                df_output.to_csv('predictions.csv')
 
-            # st.dataframe(streamlit_df.style.apply(styler))
+                # st.dataframe(streamlit_df.style.apply(styler))
 
-            st.write(streamlit_df.style.apply(styler))
+                st.write(streamlit_df.style.apply(styler))
 
         # Adding in new file to try and remove duplicates - Katja Alexander
 
         if (file1 is not None) and (file2 is not None) and userchoice == 'Duplicate Project':
-            st.write('Document 1: \n')
-            file1.seek(0)
-            df1 = pd.read_csv(file1, header=0, skip_blank_lines=True).dropna()
-            st.write(df1)
-            st.write('\n')
-            st.write('Document 2: \n')
-            file2.seek(0)
-            df2 = pd.read_csv(file2, header=0, skip_blank_lines=True).dropna()
-            st.write(df2.dropna())
-            st.write('\n')
+            if '.csv' not in file1.name:
+                st.write('Please upload .csv files only')
+            elif '.csv' not in file2.name:
+                st.write('Please upload .csv files only')
+            else:
+                st.write('Document 1: \n')
+                file1.seek(0)
+                df1 = pd.read_csv(file1, header=0, skip_blank_lines=True, dtype=str).dropna()
+                st.write(df1)
+                st.write('\n')
+                st.write('Document 2: \n')
+                file2.seek(0)
+                df2 = pd.read_csv(file2, header=0, skip_blank_lines=True, dtype=str).dropna()
+                st.write(df2.dropna())
+                st.write('\n')
 
-            # concatenate both documents as is
-            st.write('Concatenated Document: \n')
-            df3 = df1.append(df2, ignore_index=True)
-            st.write(df3)
+                # concatenate both documents as is
+                st.write('Concatenated Document: \n')
+                df3 = df1.append(df2, ignore_index=True)
+                st.write(df3)
 
-            # remove the duplicates, and add button to download new csv file
-            st.write('duplicates removed:')
-            df4 = df3.drop_duplicates()
-            st.write(df4.reset_index(drop=True))
+                # remove the duplicates, and add button to download new csv file
+                st.write('duplicates removed:')
+                df4 = df3.drop_duplicates()
+                st.write(df4.reset_index(drop=True))
 
-            st.download_button(
-                label='Download new concatenated CSV file',
-                data=convert_df_to_csv(df4),
-                file_name='concatenated CSV files.csv',
-                mime='text/csv',
-            )
+                st.download_button(
+                    label='Download new concatenated CSV file',
+                    data=convert_df_to_csv(df4),
+                    file_name='concatenated CSV files.csv',
+                    mime='text/csv',
+                )
 
-            # attempt to highlight customers that are likely the same
-            st.write('potential duplicate customers:')
-            duplicates = df4.duplicated(subset=['First Name', 'Last Name'], keep=False)
-            df4['duplicated names'] = duplicates
-            df5 = df4[df4['duplicated names'] == True]
-            df5.drop('duplicated names', axis=1, inplace=True)
-            st.write(df5)
+                # attempt to highlight customers that are likely the same
+                st.write('potential duplicate customers:')
+                duplicates = df4.duplicated(subset=['First Name', 'Last Name'], keep=False)
+                df4['duplicated names'] = duplicates
+                df5 = df4[df4['duplicated names'] == True]
+                df5.drop('duplicated names', axis=1, inplace=True)
+                st.write(df5)
 
-            # Select some rows using st.multiselect. This will break down when you have >1000 rows.
-            selected_indices = st.multiselect('Select customers to keep:', df5.index)
-            selected_rows = df5.loc[selected_indices]
+                # Select some rows using st.multiselect. This will break down when you have >1000 rows.
+                selected_indices = st.multiselect('Select customers to keep:', df5.index)
+                selected_rows = df5.loc[selected_indices]
 
-            # removing all duplicated names
-            df6 = pd.concat([df3, df5]).drop_duplicates(keep=False)
+                # removing all duplicated names
+                df6 = pd.concat([df3, df5]).drop_duplicates(keep=False)
 
-            # adding back selected duplicated names
-            st.write('selected names appear at the end of the file, others are removed')
-            df7 = pd.concat([df6, selected_rows])
-            st.write(df7)
+                # adding back selected duplicated names
+                st.write('selected names appear at the end of the file, others are removed')
+                df7 = pd.concat([df6, selected_rows])
+                st.write(df7)
 
-            st.download_button(
-                label='Download second concatenated CSV file',
-                data=convert_df_to_csv(df7),
-                file_name='second concatenated CSV file.csv',
-                mime='text/csv',
-            )
-
+                st.download_button(
+                    label='Download second concatenated CSV file',
+                    data=convert_df_to_csv(df7),
+                    file_name='second concatenated CSV file.csv',
+                    mime='text/csv',
+                )
 
     if 'load_state' not in st.session_state:
         st.session_state.load_state = False
