@@ -16,6 +16,7 @@ New feature function - Explanation Project
 
 Potential future work:
 - add in attention visualisations
+- Stop the whole system updating when any button pressed
 
 
 ## Changes made to add in duplicate values function for "Cleansing and Validation of Priority Services Register Data"

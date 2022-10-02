@@ -523,11 +523,11 @@ def main():
             elif '.csv' in file2.name:
                 st.write('Please upload a .txt, .pdf or .docx file only')
             else:
-                st.write('Document 1: \n')
+                st.markdown('**Document 1:** \n')
                 premise_tokens = premise_text.decode('utf8')
                 annotated_text(*premise_tokens)
                 st.write('\n')
-                st.write('Document 2: \n')
+                st.markdown('**Document 2:** \n')
                 hypothesis_tokens = hypothesis_text.decode('utf8')
                 annotated_text(*hypothesis_tokens)
                 st.write('\n')
@@ -538,11 +538,11 @@ def main():
                 for percent_complete in range(100):
                     time.sleep(0.05)
                 my_bar.progress(percent_complete + 1)
-                df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity', 'action'])
+                df_output = pd.DataFrame(columns=['premise', 'hypothesis', 'prediction', 'similarity'])
 
                 sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
-                sim_percent = '{:.0%}'.format(sim)
-                st.write('\n The similarity of the two documents is ', sim_percent)
+                sim_percent = '**{:.0%}**'.format(sim)
+                st.markdown('**The similarity of the two documents is** ' + sim_percent)
 
                 row_count = 0
 
@@ -550,27 +550,16 @@ def main():
                 checking_text = st.text('Processing...')
                 bar = st.progress(0)
 
+                st.markdown('**Table showing each statement in the premise text compared to each statement in the '
+                            'hypothesis text**')
+
                 totalCount = len(premises) * len(hypotheses)
                 for premise in premises:
                     for hypothesis in hypotheses:
                         outcome = check_similarity_contradiction(premise, hypothesis)[0]
                         percentage = '{:.0%}'.format(calculate_similarity_percentage(premise, hypothesis))
-                        test = check_similarity_contradiction(premise, hypothesis)[1]
-                        tensor = [["contradiction", "entailment", "neutral"], test[0]]
-                        chart_data = pd.DataFrame(
-                            test,
-                            columns=["entailment", "contradiction", "neutral"])
-                        testing = st.button('click me', key=premise + hypothesis)
-                        if testing:
-                            fig = plt.figure()
-                            ax = fig.add_axes([0, 0, 1, 1])
-                            xValues = ["entailment", "contradiction", "neutral"]
-                            yValues = test[0]
-                            ax.bar(xValues, yValues)
-                            st.pyplot(fig)  # data=tensor[1], x=tensor[0], )
-                            st.write(tensor)
                         row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
-                               'similarity': percentage, 'action': testing}
+                               'similarity': percentage}
                         row_count = row_count + 1
                         df_output = df_output.append(row, ignore_index=True)
                         print('Row = ', row)
@@ -581,12 +570,36 @@ def main():
                         time.sleep(0.1)
 
                 streamlit_df = pd.DataFrame(df_output)
+                st.write(streamlit_df.style.apply(styler))
+
+                st.markdown('**Graphs showing each statement in the premise text compared to each statement in the '
+                            'hypothesis text**')
+                st.write('The highest value will correspond to the chosen value, as these are negative values look for the smallest bar')
+
+                row_count = -1
+
+                for premise in premises:
+                    for hypothesis in hypotheses:
+                        row_count = row_count + 1
+                        st.write('Further information about statement ', str(row_count))
+                        softmax = check_similarity_contradiction(premise, hypothesis)[1]
+                        tensor = [["contradiction", "entailment", "neutral"], softmax[0]]
+                        array = np.array(tensor).transpose()
+                        graphbutton = st.button('View Softmax Graph', key=row_count)
+                        if graphbutton:
+                            fig = plt.figure()
+                            ax = fig.add_axes([0, 0, 1, 1])
+                            ax.set_title('premise: ' + premise + '\n hypothesis: ' + hypothesis, fontweight='bold')
+                            xValues = ["entailment", "contradiction", "neutral"]
+                            yValues = softmax[0]
+                            ax.bar(xValues, yValues)
+                            ax.set_ylabel('Softmax',)
+                            st.pyplot(fig)
+                        tablebutton = st.button('View Tensor Table', key=row_count+1000)
+                        if tablebutton:
+                            st.table(array)
 
                 df_output.to_csv('predictions.csv')
-
-                # st.dataframe(streamlit_df.style.apply(styler))
-
-                st.write(streamlit_df.style.apply(styler))
 
         # Adding in new file to try and remove duplicates - Katja Alexander
 
