@@ -1,5 +1,73 @@
-,premise,hypothesis,prediction,similarity
-0,It is necessary for a skilled person in the area of expertise of the patent to understand it.,A patent has to be understood by an ordinary skilled person.,entailment,92%
-1,It is necessary for a skilled person in the area of expertise of the patent to understand it.,The Secretary of State has to consider an interim custody order.,contradiction,88%
-2,The custody order has to be executed by the Secretary of State personally.,A patent has to be understood by an ordinary skilled person.,entailment,88%
-3,The custody order has to be executed by the Secretary of State personally.,The Secretary of State has to consider an interim custody order.,entailment,96%
+,premise,hypothesis,prediction,similarity,action
+0,it is nighttime.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,74%,False
+1,it is nighttime.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,66%,False
+2,it is nighttime.,two racers race on motorcycles.,neutral,55%,False
+3,it is nighttime.,firefighters in full gear are walking up a ladder.,neutral,73%,False
+4,it is nighttime.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,72%,False
+5,it is nighttime.,a woman in black walks down the street in front of a graffited wall.,neutral,72%,False
+6,a woman holding a scruffy cat.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,73%,False
+7,a woman holding a scruffy cat.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,91%,False
+8,a woman holding a scruffy cat.,two racers race on motorcycles.,contradiction,54%,False
+9,a woman holding a scruffy cat.,firefighters in full gear are walking up a ladder.,contradiction,75%,False
+10,a woman holding a scruffy cat.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,77%,False
+11,a woman holding a scruffy cat.,a woman in black walks down the street in front of a graffited wall.,contradiction,84%,False
+12,two people are racing.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,79%,False
+13,two people are racing.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,65%,False
+14,two people are racing.,two racers race on motorcycles.,neutral,85%,False
+15,two people are racing.,firefighters in full gear are walking up a ladder.,contradiction,81%,False
+16,two people are racing.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,75%,False
+17,two people are racing.,a woman in black walks down the street in front of a graffited wall.,contradiction,74%,False
+18,the firefighters are trying to save a child.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,80%,False
+19,the firefighters are trying to save a child.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,74%,False
+20,the firefighters are trying to save a child.,two racers race on motorcycles.,contradiction,63%,False
+21,the firefighters are trying to save a child.,firefighters in full gear are walking up a ladder.,contradiction,87%,False
+22,the firefighters are trying to save a child.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,82%,False
+23,the firefighters are trying to save a child.,a woman in black walks down the street in front of a graffited wall.,contradiction,82%,False
+24,the dogs are adopted.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,74%,False
+25,the dogs are adopted.,"an elderly lady holding a scruffy dog and smiling 
+contently.",neutral,72%,False
+26,the dogs are adopted.,two racers race on motorcycles.,contradiction,64%,False
+27,the dogs are adopted.,firefighters in full gear are walking up a ladder.,contradiction,74%,False
+28,the dogs are adopted.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,70%,False
+29,the dogs are adopted.,a woman in black walks down the street in front of a graffited wall.,contradiction,71%,False
+30,three men are a dancer.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,81%,False
+31,three men are a dancer.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,73%,False
+32,three men are a dancer.,two racers race on motorcycles.,contradiction,66%,False
+33,three men are a dancer.,firefighters in full gear are walking up a ladder.,contradiction,81%,False
+34,three men are a dancer.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,77%,False
+35,three men are a dancer.,a woman in black walks down the street in front of a graffited wall.,contradiction,82%,False
+36,the man is outside.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,81%,False
+37,the man is outside.,"an elderly lady holding a scruffy dog and smiling 
+contently.",contradiction,76%,False
+38,the man is outside.,two racers race on motorcycles.,contradiction,61%,False
+39,the man is outside.,firefighters in full gear are walking up a ladder.,neutral,82%,False
+40,the man is outside.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",neutral,86%,False
+41,the man is outside.,a woman in black walks down the street in front of a graffited wall.,contradiction,89%,False
+42,a lady walks down the street.,"two men are loading bales of wheat on top of a high structure on a 
+cloudy day.",contradiction,79%,False
+43,a lady walks down the street.,"an elderly lady holding a scruffy dog and smiling 
+contently.",neutral,83%,False
+44,a lady walks down the street.,two racers race on motorcycles.,contradiction,64%,False
+45,a lady walks down the street.,firefighters in full gear are walking up a ladder.,contradiction,84%,False
+46,a lady walks down the street.,"man sitting on bench with suitcase waiting for his source of 
+transportation.",contradiction,84%,False
+47,a lady walks down the street.,a woman in black walks down the street in front of a graffited wall.,neutral,93%,False
