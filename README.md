@@ -31,7 +31,7 @@ New feature function - Duplication Project
 - Allows the user to download a new .csv file with no duplicates
 
 
-#Usage
+## Usage
 
 ```python
 streamlit run codes\scripts\main.py
