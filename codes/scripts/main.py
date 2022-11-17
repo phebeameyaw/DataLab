@@ -37,6 +37,7 @@ from torch.nn.utils.rnn import pad_sequence
 import sentencepiece
 from transformers import AlbertTokenizer, AlbertModel, AlbertPreTrainedModel
 from transformers import AlbertForSequenceClassification, AdamW
+from transformers import AutoTokenizer
 
 # nlp = spacy.load('en_core_web_sm') # large needed for word vectors
 nlp = spacy.load('en_core_web_lg')  # large
@@ -106,7 +107,7 @@ class SNLIDataAlbertPredictor(Dataset):
         self.input_df = input_df
 
         self.base_path = '/content/'
-        self.tokenizer = AlbertTokenizer.from_pretrained('albert-base-v2', do_lower_case=True)
+        self.tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-base-german-finetuned-ler") #bert-base-german-cased
         self.input_data = None
 
         self.init_data()
