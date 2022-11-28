@@ -37,7 +37,7 @@ from torch.nn.utils.rnn import pad_sequence
 import sentencepiece
 from transformers import AlbertTokenizer, AlbertModel, AlbertPreTrainedModel
 from transformers import AlbertForSequenceClassification, AdamW
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 
 # nlp = spacy.load('en_core_web_sm') # large needed for word vectors
 nlp = spacy.load('en_core_web_lg')  # large
@@ -101,13 +101,13 @@ def calculate_similarity_percentage(file1, file2):
 
 class SNLIDataAlbertPredictor(Dataset):
 
-    def __init__(self, input_df):
+    def __init__(self, input_df, langchoice):
         self.label_dict = {'entailment': 0, 'contradiction': 1, 'neutral': 2}
 
         self.input_df = input_df
 
         self.base_path = '/content/'
-        self.tokenizer = AutoTokenizer.from_pretrained("mrm8488/bert-base-german-finetuned-ler") #bert-base-german-cased
+        self.tokenizer = langchoice
         self.input_data = None
 
         self.init_data()
@@ -157,11 +157,11 @@ class SNLIDataAlbertPredictor(Dataset):
 
 
 # code for checking similarity and contradiction
-def check_similarity_contradiction(sentence1, sentence2):
+def check_similarity_contradiction(sentence1, sentence2, langchoice):
     data_input = {'premise': [sentence1], 'hypothesis': [sentence2]}
     df_input = pd.DataFrame(data_input, columns=['premise', 'hypothesis'])
 
-    input_dataset = SNLIDataAlbertPredictor(df_input)
+    input_dataset = SNLIDataAlbertPredictor(df_input, langchoice)
     input_loader = input_dataset.get_data_loaders(batch_size=1)
 
     (pair_token_ids, mask_ids, seg_ids) = next(iter(input_loader))
@@ -362,17 +362,23 @@ def main():
     steps = st.container()  # updated st.beta_container() to st.container()
     userinputfiles = st.container()  # updated st.beta_container() to st.container()
     userchoice = st.container()  # updated st.beta_container() to st.container()
+    langchoice = st.container()
 
     # -- Default selector list
     selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities',
                      'Explanation Project', 'Duplicate Project']
+
+    # language list
+    language_list = ['English', 'German']
 
     with header:
         st.image('codes/res/legalpythiaheader.jpg')
         st.title(' Welcome to the Live Demo!')
         st.text(' Here you get to upload two text files and check for similarity or contradiction')
 
-    with userinputfiles and userchoice:
+    with userinputfiles and userchoice and langchoice:
+
+        langchosen = st.sidebar.selectbox('Select the language the files are in', language_list)
 
         file1 = st.sidebar.file_uploader('Upload first document', type=['txt', 'pdf', 'docx', 'csv'])
         file2 = st.sidebar.file_uploader('Upload second document', type=['txt', 'pdf', 'docx', 'csv'])
@@ -380,7 +386,7 @@ def main():
         save_file(file1)
         save_file(file2)
 
-        userchoice = st.sidebar.selectbox('Setect the feature function', selector_list)
+        userchoice = st.sidebar.selectbox('Select the feature function', selector_list)
 
         if file1 is not None:
             if 'pdf' in file1.name:
@@ -399,6 +405,11 @@ def main():
             else:
                 hypothesis_text = file2.read()
             hypotheses = nltk.sent_tokenize(hypothesis_text.decode('utf8'))  # bytes to string
+
+        if langchosen == 'English':
+            langchoice = AlbertTokenizer.from_pretrained('albert-base-v2', do_lower_case=True)
+        elif langchosen == 'German':
+            langchoice = AutoTokenizer.from_pretrained("mrm8488/bert-base-german-finetuned-ler") #bert-base-german-cased
 
         if (file1 is not None) and (file2 is not None) and userchoice == 'Similarity %':
             sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
@@ -435,7 +446,7 @@ def main():
             totalCount = len(premises) * len(hypotheses)
             for premise in premises:
                 for hypothesis in hypotheses:
-                    outcome = check_similarity_contradiction(premise, hypothesis)[0]
+                    outcome = check_similarity_contradiction(premise, hypothesis, langchoice)[0]
                     row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome}
                     row_count = row_count + 1
                     df_output = df_output.append(row, ignore_index=True)
@@ -557,7 +568,7 @@ def main():
                 totalCount = len(premises) * len(hypotheses)
                 for premise in premises:
                     for hypothesis in hypotheses:
-                        outcome = check_similarity_contradiction(premise, hypothesis)[0]
+                        outcome = check_similarity_contradiction(premise, hypothesis, langchoice)[0]
                         percentage = '{:.0%}'.format(calculate_similarity_percentage(premise, hypothesis))
                         row = {'premise': premise, 'hypothesis': hypothesis, 'prediction': outcome,
                                'similarity': percentage}
@@ -583,7 +594,7 @@ def main():
                     for hypothesis in hypotheses:
                         row_count = row_count + 1
                         st.write('Further information about statement ', str(row_count))
-                        softmax = check_similarity_contradiction(premise, hypothesis)[1]
+                        softmax = check_similarity_contradiction(premise, hypothesis, langchoice)[1]
                         tensor = [["contradiction", "entailment", "neutral"], softmax[0]]
                         array = np.array(tensor).transpose()
                         graphbutton = st.button('View Softmax Graph', key=row_count)
