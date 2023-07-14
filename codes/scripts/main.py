@@ -66,6 +66,7 @@ optimizer_grouped_parameters = [
 ]
 
 #  contains all of the hyperparemeter information for training loop
+#comment
 optimizer = AdamW(optimizer_grouped_parameters, lr=2e-5, correct_bias=False)
 
 # epoch_to_resume = 4
