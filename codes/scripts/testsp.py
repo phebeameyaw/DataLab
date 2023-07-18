@@ -37,7 +37,13 @@ from torch.nn.utils.rnn import pad_sequence
 import sentencepiece
 from transformers import AlbertTokenizer, AlbertModel, AlbertPreTrainedModel
 from transformers import AlbertForSequenceClassification, AdamW
-from transformers import AutoTokenizer, AutoModelForMaskedLM
+from transformers import AutoTokenizer, AutoModelForMaskedLM, AutoModelForSequenceClassification
+from transformers import BertForMaskedLM, BertTokenizer
+from transformers import BertForSequenceClassification
+
+#download  'punkt' resource from nltk for text tokenization  -  Phebe Ameyaw
+# It provides pre-trained models and data for text tokenization tasks.
+nltk.download('punkt')
 
 # nlp = spacy.load('en_core_web_sm') # large needed for word vectors
 nlp = spacy.load('en_core_web_lg')  # large
@@ -54,20 +60,35 @@ device_type = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 model = AlbertForSequenceClassification.from_pretrained('albert-base-v2', num_labels=3)
 #model = AlbertModel.from_pretrained("albert-base-v2", num_labels=3)
+#model_eng.to(device)
+
+#Loading Spanish BERT model 
+#model = AutoModelForSequenceClassification.from_pretrained('dccuchile/bert-base-spanish-wwm-uncased', num_labels=3)
 model.to(device)
+
+
+# Get named parameters and define no_decay list
 
 param_optimizer = list(model.named_parameters())
 no_decay = ['bias', 'gamma', 'beta']
+
+#need to implement BERT Spanish model 
+
 optimizer_grouped_parameters = [
     {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-     'weight_decay_rate': 0.01},
+     'weight_decay': 0.01},
     {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
-     'weight_decay_rate': 0.0}
+     'weight_decay': 0.0}
 ]
+
+
+
 
 #  contains all of the hyperparemeter information for training loop
 
 optimizer = AdamW(optimizer_grouped_parameters, lr=2e-5, correct_bias=False)
+
+
 
 # epoch_to_resume = 4
 epoch_to_resume = 6
@@ -80,10 +101,10 @@ if os.path.isfile(path_to_model_saved):
     checkpoint = torch.load(path_to_model_saved, map_location=torch.device('cpu'))
     savd_epoch = checkpoint['epoch']
     best_acc = checkpoint['best_acc']
+    #model_eng.load_state_dict(checkpoint['state_dict'])
     model.load_state_dict(checkpoint['state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer'])
-    print("\n >>> loaded checkpoint '{}' (epoch {})"
-          .format(path_to_model_saved, checkpoint['epoch']))
+    print("\n >>> loaded checkpoint '{}' (epoch {})".format(path_to_model_saved, checkpoint['epoch']))
 else:
     print("\n >>> no checkpoint found at '{}'".format(path_to_model_saved))
 
@@ -123,6 +144,10 @@ class SNLIDataAlbertPredictor(Dataset):
 
         premise_list = df['premise'].to_list()
         hypothesis_list = df['hypothesis'].to_list()
+          
+
+        
+        
 
         for (premise, hypothesis) in zip(premise_list, hypothesis_list):
             premise_id = self.tokenizer.encode(premise, add_special_tokens=False)
@@ -158,7 +183,7 @@ class SNLIDataAlbertPredictor(Dataset):
 
 
 # code for checking similarity and contradiction
-def check_similarity_contradiction(sentence1, sentence2, langchoice):
+def check_similarity_contradiction(sentence1, sentence2, langchoice, model):
     data_input = {'premise': [sentence1], 'hypothesis': [sentence2]}
     df_input = pd.DataFrame(data_input, columns=['premise', 'hypothesis'])
 
@@ -345,7 +370,7 @@ def save_file(uploaded_file):
         # To read file as string:
         string_data = stringio.read()
         # st.write(string_data)
-        with open('temp/' + uploaded_file.name, 'w') as text_file:
+        with open('temp/' + uploaded_file.name, 'w', encoding='utf-8') as text_file:   
             text_file.write(string_data)
 
 
@@ -364,13 +389,16 @@ def main():
     userinputfiles = st.container()  # updated st.beta_container() to st.container()
     userchoice = st.container()  # updated st.beta_container() to st.container()
     langchoice = st.container()
-
+     
+    
     # -- Default selector list
     selector_list = ['Similarity %', 'Similarity and Contradition Detection', 'Visualise Entities',
                      'Explanation Project', 'Duplicate Project']
 
     # language list
-    language_list = ['English', 'German']
+    #added Spanish to the list - Phebe Ameyaw
+    language_list = ['English', 'German', 'Spanish']
+     
 
     with header:
         st.image('codes/res/legalpythiaheader.jpg')
@@ -411,6 +439,9 @@ def main():
             langchoice = AlbertTokenizer.from_pretrained('albert-base-v2', do_lower_case=True)
         elif langchosen == 'German':
             langchoice = AutoTokenizer.from_pretrained("mrm8488/bert-base-german-finetuned-ler") #bert-base-german-cased
+        elif langchosen == 'Spanish':   
+            langchoice = AutoTokenizer.from_pretrained("dccuchile/bert-base-spanish-wwm-uncased") #bert-base-spanish-uncased - Phebe Ameyaw
+
 
         if (file1 is not None) and (file2 is not None) and userchoice == 'Similarity %':
             sim = calculate_similarity_percentage(premise_text.decode('utf8'), hypothesis_text.decode('utf8'))
@@ -513,6 +544,7 @@ def main():
         if (file1 is not None) and (file2 is not None) and userchoice == 'Visualise Entities':
             st.write('Document 1: \n')
             premise_tokens = visualise_ner(premise_text.decode('utf8'))
+            #premise_tokens = visualise_ner(premise_text.decode('utf8'))
             annotated_text(*premise_tokens)
             st.write('\n')
             if st.button('Document 1 Entities'):
